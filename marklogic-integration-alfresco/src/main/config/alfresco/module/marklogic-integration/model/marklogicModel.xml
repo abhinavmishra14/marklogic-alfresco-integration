@@ -1,0 +1,62 @@
+<!-- 
+	Copyright 2012 Zaizi Ltd
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	    http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+ -->
+<model name="marklogic:publishingmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Alfresco MarkLogic Publishing Content Model</description>
+	<author>Zaizi Ltd</author>
+	<published>2012-07-02</published>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/publishing/1.0" prefix="pub" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://www.alfresco.org/model/publishing/marklogic/1.0" prefix="marklogic" />
+	</namespaces>
+
+	<types>
+		<type name="marklogic:DeliveryChannel">
+			<title>MarkLogic Delivery Channel</title>
+			<description>Node type used to represent MarkLogic delivery channels</description>
+			<parent>pub:DeliveryChannel</parent>
+			<mandatory-aspects>
+				<aspect>marklogic:DeliveryChannelAspect</aspect>
+			</mandatory-aspects>
+		</type>
+
+	</types>
+
+	<aspects>
+		<aspect name="marklogic:DeliveryChannelAspect">
+			<title>MarkLogic Delivery Channel Aspect</title>
+			<description>Applied to a node that represents a MarkLogic delivery channel</description>
+			<properties>
+				<property name="marklogic:host">
+					<title>MarkLogic Server hostname</title>
+					<type>d:text</type>
+				</property>
+				<property name="marklogic:port">
+					<title>MarkLogic Server port</title>
+					<type>d:int</type>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+</model>
