@@ -19,6 +19,9 @@ import org.alfresco.service.namespace.QName;
 
 /**
  * MarkLogic Publishing Model.
+ * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
+ * Added the custom uris.
+ * Modified by- Abhinav Kumar Mishra
  *
  * @author aayala
  */

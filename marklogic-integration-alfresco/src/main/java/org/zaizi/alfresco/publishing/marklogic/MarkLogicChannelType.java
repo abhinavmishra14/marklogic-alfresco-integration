@@ -47,7 +47,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.
- *
+ * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
+ * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.
+ * Modified by- Abhinav Kumar Mishra
+ * 
  * @author aayala
  */
 public class MarkLogicChannelType extends AbstractChannelType

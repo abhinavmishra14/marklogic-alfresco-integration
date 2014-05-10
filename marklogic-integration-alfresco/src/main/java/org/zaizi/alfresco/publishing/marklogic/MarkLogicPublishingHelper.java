@@ -35,6 +35,9 @@ import org.apache.http.protocol.HttpContext;
 
 /**
  * Helper Methods for MarkLogic Publishing
+ * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
+ * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis with custom URIs.
+ * Modified by- Abhinav Kumar Mishra
  * 
  * @author aayala
  * 
