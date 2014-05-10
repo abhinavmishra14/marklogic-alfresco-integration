@@ -18,38 +18,36 @@ package org.zaizi.alfresco.publishing.marklogic;
 import org.alfresco.service.namespace.QName;
 
 /**
- * MarkLogic Publishing Model.
+ * MarkLogic Publishing Model.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
- * Added the custom uris.
- * Modified by- Abhinav Kumar Mishra
+ * Added the custom uris.<br/>
+ * <b>Modified by-</b> Abhinav Kumar Mishra
  *
  * @author aayala
  */
-public interface MarkLogicPublishingModel
-{
-    
-    /** The Constant NAMESPACE. */
-    public static final String NAMESPACE = "http://www.alfresco.org/model/publishing/marklogic/1.0";
-    
-    /** The Constant PREFIX. */
-    public static final String PREFIX = "marklogic";
-    
-    /** The Constant PROP_HOST. */
-    public static final QName PROP_HOST = QName.createQName(NAMESPACE, "host");
-    
-    /** The Constant PROP_PORT. */
-    public static final QName PROP_PORT = QName.createQName(NAMESPACE, "port");
-    
-    /** The Constant TYPE_DELIVERY_CHANNEL. */
-    public static final QName TYPE_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannel");
-    
-    /** The Constant ASPECT_DELIVERY_CHANNEL. */
-    public static final QName ASPECT_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannelAspect");
-    
-    /** The Constant PUBLISH_URI_KEY. */
-    public static final String PUBLISH_URI_KEY = "alfrescopub/publish";
-    
-    /** The Constant UNPUBLISH_URI_KEY. */
-    public static final String UNPUBLISH_URI_KEY = "alfrescopub/unpublish";
+public interface MarkLogicPublishingModel {
 
+	/** The Constant NAMESPACE. */
+	 String NAMESPACE = "http://www.alfresco.org/model/publishing/marklogic/1.0";
+
+	/** The Constant PREFIX. */
+	 String PREFIX = "marklogic";
+
+	/** The Constant PROP_HOST. */
+	 QName PROP_HOST = QName.createQName(NAMESPACE, "host");
+
+	/** The Constant PROP_PORT. */
+	 QName PROP_PORT = QName.createQName(NAMESPACE, "port");
+
+	/** The Constant TYPE_DELIVERY_CHANNEL. */
+	 QName TYPE_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannel");
+
+	/** The Constant ASPECT_DELIVERY_CHANNEL. */
+	 QName ASPECT_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannelAspect");
+
+	/** The Constant PUBLISH_URI_KEY. */
+	 String PUBLISH_URI_KEY = "alfrescopub/publish";
+
+	/** The Constant UNPUBLISH_URI_KEY. */
+	 String UNPUBLISH_URI_KEY = "alfrescopub/unpublish";
 }

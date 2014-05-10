@@ -46,18 +46,17 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
- * Channel definition for publishing/unpublishing XML content to MarkLogic Server.
+ * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
- * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.
- * Modified by- Abhinav Kumar Mishra
+ * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.<br/>
+ * <b>Modified by-</b> Abhinav Kumar Mishra
  * 
  * @author aayala
  */
-public class MarkLogicChannelType extends AbstractChannelType
-{
+public class MarkLogicChannelType extends AbstractChannelType {
     
     /** The Constant log. */
-    private final static Log log = LogFactory.getLog(MarkLogicChannelType.class);
+    private final static Log LOG = LogFactory.getLog(MarkLogicChannelType.class);
 
     /** The Constant ID. */
     public final static String ID = "marklogic";
@@ -69,7 +68,10 @@ public class MarkLogicChannelType extends AbstractChannelType
     private final static int STATUS_DOCUMENT_DELETED = 200;
     
     /** The Constant DEFAULT_SUPPORTED_MIME_TYPES. */
-    private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = CollectionUtils.unmodifiableSet(MimetypeMap.MIMETYPE_XML);
+	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = CollectionUtils.unmodifiableSet(
+                    MimetypeMap.MIMETYPE_XML,MimetypeMap.MIMETYPE_XHTML, MimetypeMap.MIMETYPE_JSON,
+					MimetypeMap.MIMETYPE_PDF, MimetypeMap.MIMETYPE_WORD,MimetypeMap.MIMETYPE_EXCEL,
+					MimetypeMap.MIMETYPE_TEXT_PLAIN,MimetypeMap.MIMETYPE_TEXT_CSV);
 
     /** The publishing helper. */
     private MarkLogicPublishingHelper publishingHelper;
@@ -85,8 +87,7 @@ public class MarkLogicChannelType extends AbstractChannelType
      *
      * @param mimeTypes the new supported mime types
      */
-    public void setSupportedMimeTypes(Set<String> mimeTypes)
-    {
+    public void setSupportedMimeTypes(final Set<String> mimeTypes) {
         supportedMimeTypes = Collections.unmodifiableSet(new TreeSet<String>(mimeTypes));
     }
 
@@ -95,88 +96,78 @@ public class MarkLogicChannelType extends AbstractChannelType
      *
      * @param markLogicPublishingHelper the new publishing helper
      */
-    public void setPublishingHelper(MarkLogicPublishingHelper markLogicPublishingHelper)
-    {
-        this.publishingHelper = markLogicPublishingHelper;
-    }
+	public void setPublishingHelper(final MarkLogicPublishingHelper markLogicPublishingHelper) {
+		this.publishingHelper = markLogicPublishingHelper;
+	}
 
     /**
      * Sets the content service.
      *
      * @param contentService the new content service
      */
-    public void setContentService(ContentService contentService)
-    {
-        this.contentService = contentService;
-    }
+	public void setContentService(final ContentService contentService) {
+		this.contentService = contentService;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canPublish()
      */
-    public boolean canPublish()
-    {
-        return true;
-    }
+	public boolean canPublish() {
+		return true;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canPublishStatusUpdates()
      */
-    public boolean canPublishStatusUpdates()
-    {
-        return false;
-    }
+	public boolean canPublishStatusUpdates() {
+		return false;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canUnpublish()
      */
-    public boolean canUnpublish()
-    {
-        return true;
-    }
+	public boolean canUnpublish() {
+		return true;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.service.cmr.publishing.channels.ChannelType#getChannelNodeType()
      */
-    public QName getChannelNodeType()
-    {
-        return MarkLogicPublishingModel.TYPE_DELIVERY_CHANNEL;
-    }
+	public QName getChannelNodeType() {
+		return MarkLogicPublishingModel.TYPE_DELIVERY_CHANNEL;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.service.cmr.publishing.channels.ChannelType#getId()
      */
-    public String getId()
-    {
-        return ID;
-    }
+	public String getId() {
+		return ID;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.repo.publishing.AbstractChannelType#getSupportedMimeTypes()
      */
     @Override
-    public Set<String> getSupportedMimeTypes()
-    {
-        return supportedMimeTypes;
-    }
+	public Set<String> getSupportedMimeTypes() {
+		return supportedMimeTypes;
+	}
 
     /* (non-Javadoc)
      * @see org.alfresco.repo.publishing.AbstractChannelType#publish(org.alfresco.service.cmr.repository.NodeRef, java.util.Map)
      */
     @Override
-    public void publish(NodeRef nodeToPublish, Map<QName, Serializable> channelProperties)
-    {
+	public void publish(final NodeRef nodeToPublish,
+			final Map<QName, Serializable> channelProperties) {
+        LOG.debug("publish() invoked...");
         ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
-        if (reader.exists())
-        {
+        if (reader.exists()) {
             File contentFile;
             boolean deleteContentFileOnCompletion = false;
-            if (FileContentReader.class.isAssignableFrom(reader.getClass()))
-            {
+            if (FileContentReader.class.isAssignableFrom(reader.getClass())) {
                 // Grab the content straight from the content store if we can...
                 contentFile = ((FileContentReader) reader).getFile();
             }
-            else
-            {
+            else {
                 // ...otherwise copy it to a temp file and use the copy...
                 File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
                 contentFile = TempFileProvider.createTempFile("marklogic", "", tempDir);
@@ -185,68 +176,59 @@ public class MarkLogicChannelType extends AbstractChannelType
             }
 
             HttpClient httpclient = new DefaultHttpClient();
-            try
-            {
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Publishing node: " + nodeToPublish);
+            try {
+            	String mimeType=reader.getMimetype();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Publishing node: " + nodeToPublish);
+                    LOG.debug("ContentFile_MIMETYPE: "+mimeType);
                 }
-
+                                
                 URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
 
-                HttpPut httpput = new HttpPut(uriPut);
-                FileEntity filenEntity = new FileEntity(contentFile, MimetypeMap.MIMETYPE_XML);
+                HttpPut httpput = new HttpPut(uriPut);                
+                FileEntity filenEntity = new FileEntity(contentFile, mimeType);
                 httpput.setEntity(filenEntity);
 
                 HttpResponse response = httpclient.execute(httpput,
                         publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
                             + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToPublish.toString());
                 }
-                if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_INSERTED)
-                {
+                if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_INSERTED) {
                     throw new AlfrescoRuntimeException(response.getStatusLine().getReasonPhrase());
-                }
-            }
-            catch (IllegalStateException e)
-            {
-                throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-            }
-            catch (IOException e)
-            {
-                throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-            }
-            catch (URISyntaxException e)
-            {
-                throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-            }
-            finally
-            {
-                httpclient.getConnectionManager().shutdown();
-                if (deleteContentFileOnCompletion)
-                {
-                    contentFile.delete();
-                }
-            }
-        }
+				}
+			} catch (IllegalStateException e) {
+				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+			} catch (IOException e) {
+				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+			} catch (URISyntaxException e) {
+				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+			} finally {
+				httpclient.getConnectionManager().shutdown();
+				if (deleteContentFileOnCompletion) {
+					contentFile.delete();
+				}
+			}
+		}
     }
 
     /* (non-Javadoc)
      * @see org.alfresco.repo.publishing.AbstractChannelType#unpublish(org.alfresco.service.cmr.repository.NodeRef, java.util.Map)
      */
     @Override
-    public void unpublish(NodeRef nodeToUnpublish, Map<QName, Serializable> channelProperties)
-    {
+	public void unpublish(final NodeRef nodeToUnpublish,
+			final Map<QName, Serializable> channelProperties) {
+    	
+        LOG.debug("unpublish() invoked...");
+
         HttpClient httpclient = new DefaultHttpClient();
-        try
-        {
-            if (log.isDebugEnabled())
-            {
-                log.debug("Unpublishing node: " + nodeToUnpublish);
-            }
+        try {
+        	
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Unpublishing node: " + nodeToUnpublish);
+			}
 
             URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
 
@@ -255,30 +237,20 @@ public class MarkLogicChannelType extends AbstractChannelType
             HttpResponse response = httpclient.execute(httpDelete,
                     publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
-            log.info("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
+            LOG.info("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
                     + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToUnpublish.toString());
 
-            if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_DELETED)
-            {
-                throw new AlfrescoRuntimeException(response.getStatusLine().getReasonPhrase());
-            }
-        }
-        catch (IllegalStateException e)
-        {
-            throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-        }
-        catch (IOException e)
-        {
-            throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-        }
-        catch (URISyntaxException e)
-        {
-            throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-        }
-        finally
-        {
-            httpclient.getConnectionManager().shutdown();
-        }
-
+			if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_DELETED) {
+				throw new AlfrescoRuntimeException(response.getStatusLine().getReasonPhrase());
+			}
+		} catch (IllegalStateException e) {
+			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+		} catch (IOException e) {
+			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+		} catch (URISyntaxException e) {
+			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+		} finally {
+			httpclient.getConnectionManager().shutdown();
+		}
     }
 }
