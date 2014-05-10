@@ -41,18 +41,25 @@ import org.apache.http.protocol.HttpContext;
  */
 public class MarkLogicPublishingHelper
 {
+    
+    /** The encryptor. */
     private MetadataEncryptor encryptor;
 
+    /**
+     * Sets the encryptor.
+     *
+     * @param encryptor the new encryptor
+     */
     public void setEncryptor(MetadataEncryptor encryptor)
     {
         this.encryptor = encryptor;
     }
 
     /**
-     * Build a httpContext from channel properties
-     * 
-     * @param channelProperties
-     * @return
+     * Build a httpContext from channel properties.
+     *
+     * @param channelProperties the channel properties
+     * @return the http context from channel properties
      */
     public HttpContext getHttpContextFromChannelProperties(Map<QName, Serializable> channelProperties)
     {
@@ -71,18 +78,36 @@ public class MarkLogicPublishingHelper
     }
 
     /**
-     * Build URI for a nodeRef into MarkLogic Server using the channel properties
-     * 
-     * @param nodeToPublish
-     * @param channelProperties
-     * @return
-     * @throws URISyntaxException
+     * Build URI for a nodeRef into MarkLogic Server using the channel properties.
+     *
+     * @param nodeToPublish the node to publish
+     * @param channelProperties the channel properties
+     * @return the put uri from node ref and channel properties
+     * @throws URISyntaxException the uRI syntax exception
      */
-    public URI getURIFromNodeRefAndChannelProperties(NodeRef nodeToPublish, Map<QName, Serializable> channelProperties)
+    public URI getPutURIFromNodeRefAndChannelProperties(NodeRef nodeToPublish, Map<QName, Serializable> channelProperties)
             throws URISyntaxException
     {
         URI uri = URIUtils.createURI("http", (String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
-                (Integer) channelProperties.get(MarkLogicPublishingModel.PROP_PORT), "store",
+                (Integer) channelProperties.get(MarkLogicPublishingModel.PROP_PORT), MarkLogicPublishingModel.PUBLISH_URI_KEY,
+                "uri=" + nodeToPublish.toString(), null);
+
+        return uri;
+    }
+    
+    /**
+     * Gets the delete uri from node ref and channel properties.
+     *
+     * @param nodeToPublish the node to publish
+     * @param channelProperties the channel properties
+     * @return the delete uri from node ref and channel properties
+     * @throws URISyntaxException the uRI syntax exception
+     */
+    public URI getDeleteURIFromNodeRefAndChannelProperties(NodeRef nodeToPublish, Map<QName, Serializable> channelProperties)
+            throws URISyntaxException
+    {
+        URI uri = URIUtils.createURI("http", (String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
+                (Integer) channelProperties.get(MarkLogicPublishingModel.PROP_PORT), MarkLogicPublishingModel.UNPUBLISH_URI_KEY,
                 "uri=" + nodeToPublish.toString(), null);
 
         return uri;

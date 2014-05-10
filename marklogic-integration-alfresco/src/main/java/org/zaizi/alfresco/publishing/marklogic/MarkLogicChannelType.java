@@ -46,71 +46,119 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
- * Channel definition for publishing/unpublishing XML content to MarkLogic Server
- * 
+ * Channel definition for publishing/unpublishing XML content to MarkLogic Server.
+ *
  * @author aayala
- * 
  */
 public class MarkLogicChannelType extends AbstractChannelType
 {
+    
+    /** The Constant log. */
     private final static Log log = LogFactory.getLog(MarkLogicChannelType.class);
 
+    /** The Constant ID. */
     public final static String ID = "marklogic";
+    
+    /** The Constant STATUS_DOCUMENT_INSERTED. */
     private final static int STATUS_DOCUMENT_INSERTED = 204;
+    
+    /** The Constant STATUS_DOCUMENT_DELETED. */
     private final static int STATUS_DOCUMENT_DELETED = 200;
+    
+    /** The Constant DEFAULT_SUPPORTED_MIME_TYPES. */
     private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = CollectionUtils.unmodifiableSet(MimetypeMap.MIMETYPE_XML);
 
+    /** The publishing helper. */
     private MarkLogicPublishingHelper publishingHelper;
+    
+    /** The content service. */
     private ContentService contentService;
 
+    /** The supported mime types. */
     private Set<String> supportedMimeTypes = DEFAULT_SUPPORTED_MIME_TYPES;
 
+    /**
+     * Sets the supported mime types.
+     *
+     * @param mimeTypes the new supported mime types
+     */
     public void setSupportedMimeTypes(Set<String> mimeTypes)
     {
         supportedMimeTypes = Collections.unmodifiableSet(new TreeSet<String>(mimeTypes));
     }
 
+    /**
+     * Sets the publishing helper.
+     *
+     * @param markLogicPublishingHelper the new publishing helper
+     */
     public void setPublishingHelper(MarkLogicPublishingHelper markLogicPublishingHelper)
     {
         this.publishingHelper = markLogicPublishingHelper;
     }
 
+    /**
+     * Sets the content service.
+     *
+     * @param contentService the new content service
+     */
     public void setContentService(ContentService contentService)
     {
         this.contentService = contentService;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canPublish()
+     */
     public boolean canPublish()
     {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canPublishStatusUpdates()
+     */
     public boolean canPublishStatusUpdates()
     {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.service.cmr.publishing.channels.ChannelType#canUnpublish()
+     */
     public boolean canUnpublish()
     {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.service.cmr.publishing.channels.ChannelType#getChannelNodeType()
+     */
     public QName getChannelNodeType()
     {
         return MarkLogicPublishingModel.TYPE_DELIVERY_CHANNEL;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.service.cmr.publishing.channels.ChannelType#getId()
+     */
     public String getId()
     {
         return ID;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.repo.publishing.AbstractChannelType#getSupportedMimeTypes()
+     */
     @Override
     public Set<String> getSupportedMimeTypes()
     {
         return supportedMimeTypes;
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.repo.publishing.AbstractChannelType#publish(org.alfresco.service.cmr.repository.NodeRef, java.util.Map)
+     */
     @Override
     public void publish(NodeRef nodeToPublish, Map<QName, Serializable> channelProperties)
     {
@@ -141,7 +189,7 @@ public class MarkLogicChannelType extends AbstractChannelType
                     log.debug("Publishing node: " + nodeToPublish);
                 }
 
-                URI uriPut = publishingHelper.getURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
+                URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
 
                 HttpPut httpput = new HttpPut(uriPut);
                 FileEntity filenEntity = new FileEntity(contentFile, MimetypeMap.MIMETYPE_XML);
@@ -183,6 +231,9 @@ public class MarkLogicChannelType extends AbstractChannelType
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.alfresco.repo.publishing.AbstractChannelType#unpublish(org.alfresco.service.cmr.repository.NodeRef, java.util.Map)
+     */
     @Override
     public void unpublish(NodeRef nodeToUnpublish, Map<QName, Serializable> channelProperties)
     {
@@ -194,7 +245,7 @@ public class MarkLogicChannelType extends AbstractChannelType
                 log.debug("Unpublishing node: " + nodeToUnpublish);
             }
 
-            URI uriDelete = publishingHelper.getURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
+            URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
 
             HttpDelete httpDelete = new HttpDelete(uriDelete);
 
