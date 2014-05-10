@@ -28,6 +28,7 @@ A generic rest web service which can handle publish and unpublish requests from 
    
    d- xdmp:add-response-header
    
+   e- xdmp:eval
    
 6- Save the role.
 
