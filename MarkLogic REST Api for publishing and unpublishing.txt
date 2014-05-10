@@ -30,6 +30,17 @@ A generic rest web service which can handle publish and unpublish requests from 
    
    e- xdmp:eval
    
+   f- xdmp:document-get
+   
+   g- any-uri
+   
+   h- xdmp:get-session-field
+   
+   i- xdmp:http-delete, xdmp:http-get , xdmp:http-head , xdmp:http-post , xdmp:http-put , xdmp:http-options
+   
+   j- xdmp:invoke
+     
+   
 6- Save the role.
 
 7- Assign following permissions to 'alfresco-publisher' role under 'default permissions' section.
