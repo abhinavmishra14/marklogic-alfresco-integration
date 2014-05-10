@@ -3,6 +3,10 @@ alfresco-marklogic-publish-unpublish-webservices
 
 A generic rest web service which can handle publish and unpublish requests from alfresco publishing channel.
 
+To work with this API, download marklogic-integration jar file from 'https://github.com/abhinavmishra14/marklogic-alfresco-integration'
+Above plugin is forked from- https://github.com/zaizi/marklogic-alfresco-integration
+
+
 #Steps to use MarkLogic REST API.
 
 1- Chekout/download the REST API from 
