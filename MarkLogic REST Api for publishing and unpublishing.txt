@@ -43,7 +43,7 @@ A generic rest web service which can handle publish and unpublish requests from 
    
 8- Create a user as 'alfrescopub-admin' and assign the 'alfresco-publisher' role to it and save the user.
    
-9- Create a HTTP Server on Marklogic server.
+9- Create a HTTP Server on Marklogic server, name it as 'Alfresco-Publishing-HTTP'.
 
 10- Select port number as '8004' (must not be in use by any app. if in use you can put any port number. but same should be configured on Alfresco Publishing Channel.)
 
