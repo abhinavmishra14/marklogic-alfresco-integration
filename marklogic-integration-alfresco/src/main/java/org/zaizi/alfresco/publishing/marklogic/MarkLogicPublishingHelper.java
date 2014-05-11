@@ -19,11 +19,14 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Set;
 
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.node.encryption.MetadataEncryptor;
 import org.alfresco.repo.publishing.PublishingModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.collections.CollectionUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -113,5 +116,22 @@ public class MarkLogicPublishingHelper {
 				    (Integer) channelProperties.get(MarkLogicPublishingModel.PROP_PORT),
 				  MarkLogicPublishingModel.UNPUBLISH_URI_KEY, "uri="+ nodeToPublish.toString(), null);
 		return uri;
+	}
+	
+	/**
+	 * Gets the mime types to be supported.
+	 *
+	 * @return the mime types to be supported
+	 */
+	public static Set<String> getMimeTypesToBeSupported() {
+		return CollectionUtils.unmodifiableSet(MimetypeMap.MIMETYPE_XML,
+				MimetypeMap.MIMETYPE_XHTML, MimetypeMap.MIMETYPE_JSON,
+				MimetypeMap.MIMETYPE_PDF, MimetypeMap.MIMETYPE_WORD,
+				MimetypeMap.MIMETYPE_EXCEL, MimetypeMap.MIMETYPE_TEXT_PLAIN,
+				MimetypeMap.MIMETYPE_PPT,
+				MimetypeMap.MIMETYPE_OPENXML_SPREADSHEET,
+				MimetypeMap.MIMETYPE_OPENXML_PRESENTATION,
+				MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING,
+				MimetypeMap.MIMETYPE_BINARY, MimetypeMap.MIMETYPE_IMAGE_GIF);
 	}
 }

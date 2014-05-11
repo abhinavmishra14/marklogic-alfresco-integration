@@ -27,7 +27,6 @@ import java.util.TreeSet;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.content.filestore.FileContentReader;
 import org.alfresco.repo.publishing.AbstractChannelType;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -35,7 +34,6 @@ import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.TempFileProvider;
-import org.alfresco.util.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -49,6 +47,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
  * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.<br/>
+ * Also Added the supprot for XML,HTML,XHTML,GIF,DOC,PDF,DOCX,XLS,XLSX,DOCX,PPT,PPTX,TEXT,BINARY and JSON etc.<br/>
  * <b>Modified by-</b> Abhinav Kumar Mishra
  * 
  * @author aayala
@@ -68,10 +67,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
     private final static int STATUS_DOCUMENT_DELETED = 200;
     
     /** The Constant DEFAULT_SUPPORTED_MIME_TYPES. */
-	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = CollectionUtils.unmodifiableSet(
-                    MimetypeMap.MIMETYPE_XML,MimetypeMap.MIMETYPE_XHTML, MimetypeMap.MIMETYPE_JSON,
-					MimetypeMap.MIMETYPE_PDF, MimetypeMap.MIMETYPE_WORD,MimetypeMap.MIMETYPE_EXCEL,
-					MimetypeMap.MIMETYPE_TEXT_PLAIN,MimetypeMap.MIMETYPE_TEXT_CSV);
+	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = MarkLogicPublishingHelper
+			.getMimeTypesToBeSupported();
 
     /** The publishing helper. */
     private MarkLogicPublishingHelper publishingHelper;
