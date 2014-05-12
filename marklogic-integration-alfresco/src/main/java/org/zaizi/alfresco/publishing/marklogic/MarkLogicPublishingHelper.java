@@ -128,10 +128,14 @@ public class MarkLogicPublishingHelper {
 				MimetypeMap.MIMETYPE_XHTML, MimetypeMap.MIMETYPE_JSON,
 				MimetypeMap.MIMETYPE_PDF, MimetypeMap.MIMETYPE_WORD,
 				MimetypeMap.MIMETYPE_EXCEL, MimetypeMap.MIMETYPE_TEXT_PLAIN,
-				MimetypeMap.MIMETYPE_PPT,
+				MimetypeMap.MIMETYPE_PPT, MimetypeMap.MIMETYPE_HTML,
 				MimetypeMap.MIMETYPE_OPENXML_SPREADSHEET,
 				MimetypeMap.MIMETYPE_OPENXML_PRESENTATION,
 				MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING,
-				MimetypeMap.MIMETYPE_BINARY, MimetypeMap.MIMETYPE_IMAGE_GIF);
+				MimetypeMap.MIMETYPE_BINARY, MimetypeMap.MIMETYPE_IMAGE_GIF,
+				MimetypeMap.MIMETYPE_IMAGE_JPEG,
+				MimetypeMap.MIMETYPE_IMAGE_PNG,
+				MimetypeMap.MIMETYPE_OUTLOOK_MSG, MimetypeMap.MIMETYPE_ZIP,
+				MimetypeMap.MIMETYPE_RSS);
 	}
 }

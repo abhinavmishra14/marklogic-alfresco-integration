@@ -67,8 +67,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
     private final static int STATUS_DOCUMENT_DELETED = 200;
     
     /** The Constant DEFAULT_SUPPORTED_MIME_TYPES. */
-	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = MarkLogicPublishingHelper
-			.getMimeTypesToBeSupported();
+	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = MarkLogicPublishingHelper.getMimeTypesToBeSupported();
 
     /** The publishing helper. */
     private MarkLogicPublishingHelper publishingHelper;
