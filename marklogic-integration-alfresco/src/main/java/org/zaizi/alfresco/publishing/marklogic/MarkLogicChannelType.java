@@ -154,7 +154,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
     @Override
 	public void publish(final NodeRef nodeToPublish,
 			final Map<QName, Serializable> channelProperties) {
-        LOG.debug("publish() invoked...");
+        LOG.info("publish() invoked...");
         ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
         if (reader.exists()) {
             File contentFile;
@@ -175,8 +175,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
             try {
             	String mimeType=reader.getMimetype();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Publishing node: " + nodeToPublish);
-                    LOG.debug("ContentFile_MIMETYPE: "+mimeType);
+                    LOG.info("Publishing node: " + nodeToPublish);
+                    LOG.info("ContentFile_MIMETYPE: "+mimeType);
                 }
                                 
                 URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
@@ -189,7 +189,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
                         publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
+                    LOG.info("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
                             + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToPublish.toString());
                 }
                 if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_INSERTED) {
@@ -217,13 +217,13 @@ public class MarkLogicChannelType extends AbstractChannelType {
 	public void unpublish(final NodeRef nodeToUnpublish,
 			final Map<QName, Serializable> channelProperties) {
     	
-        LOG.debug("unpublish() invoked...");
+        LOG.info("unpublish() invoked...");
 
         HttpClient httpclient = new DefaultHttpClient();
         try {
         	
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Unpublishing node: " + nodeToUnpublish);
+				LOG.info("Unpublishing node: " + nodeToUnpublish);
 			}
 
             URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);

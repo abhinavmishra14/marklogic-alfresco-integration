@@ -20,12 +20,24 @@ import org.alfresco.service.namespace.QName;
 /**
  * MarkLogic Publishing Model.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
- * Added the custom uris.<br/>
+ * Added the custom constants<br/>
  * <b>Modified by-</b> Abhinav Kumar Mishra
  *
  * @author aayala
  */
 public interface MarkLogicPublishingModel {
+
+	 /** The protocol. */
+ 	String PROTOCOL = "http";
+	 
+	 /** The uri. */
+ 	String URI = "uri=";
+	 
+	 /** The mimetypes from propertiesfile. */
+ 	String MIMETYPES_PROPERTIESFILE = "alfresco/module/marklogic-integration/alfresco-global.properties";
+	 
+ 	/** The supportd mime key. */
+	 String SUPPORTD_MIME_KEY = "supportedMimeTypes";
 
 	/** The Constant NAMESPACE. */
 	 String NAMESPACE = "http://www.alfresco.org/model/publishing/marklogic/1.0";
