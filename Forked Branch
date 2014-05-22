@@ -3,7 +3,7 @@ This jar eliminates the dependency of corona and provides you more customizable 
 
 To download Marklogic REST service go to : https://github.com/abhinavmishra14/alfresco-marklogic-publish-unpublish-webservices
 
-And follow the steps to given in ReadMe file to configure it.
+And follow the steps to given in Publishing and Unpublishing content using MarkLogic-REST.txt file to configure it.
 
 
 Note: Above plugin is forked from- https://github.com/zaizi/marklogic-alfresco-integration
