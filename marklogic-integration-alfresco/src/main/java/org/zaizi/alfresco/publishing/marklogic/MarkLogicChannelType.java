@@ -67,8 +67,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
     private final static int STATUS_DOCUMENT_DELETED = 200;
     
     /** The Constant DEFAULT_SUPPORTED_MIME_TYPES. */
-	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = MarkLogicPublishingHelper.getMimeTypesToBeSupported();
-
+ 	private final static Set<String> DEFAULT_SUPPORTED_MIME_TYPES = MarkLogicPublishingHelper.getMimeTypesToBeSupported();
+ 	
     /** The publishing helper. */
     private MarkLogicPublishingHelper publishingHelper;
     
@@ -155,7 +155,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
 	public void publish(final NodeRef nodeToPublish,
 			final Map<QName, Serializable> channelProperties) {
         LOG.info("publish() invoked...");
-        ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
+        final ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
         if (reader.exists()) {
             File contentFile;
             boolean deleteContentFileOnCompletion = false;
@@ -165,7 +165,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
             }
             else {
                 // ...otherwise copy it to a temp file and use the copy...
-                File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
+                final File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
                 contentFile = TempFileProvider.createTempFile("marklogic", "", tempDir);
                 reader.getContent(contentFile);
                 deleteContentFileOnCompletion = true;
@@ -173,35 +173,44 @@ public class MarkLogicChannelType extends AbstractChannelType {
 
             HttpClient httpclient = new DefaultHttpClient();
             try {
-            	String mimeType=reader.getMimetype();
+            	final String mimeType=reader.getMimetype();
                 if (LOG.isDebugEnabled()) {
-                    LOG.info("Publishing node: " + nodeToPublish);
-                    LOG.info("ContentFile_MIMETYPE: "+mimeType);
+                    LOG.debug("Publishing node: " + nodeToPublish);
+                    LOG.debug("ContentFile_MIMETYPE: "+mimeType);
                 }
                                 
                 URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
 
-                HttpPut httpput = new HttpPut(uriPut);                
-                FileEntity filenEntity = new FileEntity(contentFile, mimeType);
+                final HttpPut httpput = new HttpPut(uriPut);                
+                final FileEntity filenEntity = new FileEntity(contentFile, mimeType);
                 httpput.setEntity(filenEntity);
 
-                HttpResponse response = httpclient.execute(httpput,
+                final HttpResponse response = httpclient.execute(httpput,
                         publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
                 if (LOG.isDebugEnabled()) {
-                    LOG.info("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
+                    LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
                             + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToPublish.toString());
                 }
                 if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_INSERTED) {
                     throw new AlfrescoRuntimeException(response.getStatusLine().getReasonPhrase());
 				}
-			} catch (IllegalStateException e) {
-				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-			} catch (IOException e) {
-				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-			} catch (URISyntaxException e) {
-				throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-			} finally {
+			} catch (IllegalStateException illegalEx) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("Exception in publish(): ", illegalEx);
+				}
+				throw new AlfrescoRuntimeException(illegalEx.getLocalizedMessage());
+			} catch (IOException ioex) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("Exception in publish(): ", ioex);
+				}
+				throw new AlfrescoRuntimeException(ioex.getLocalizedMessage());
+			} catch (URISyntaxException uriSynEx) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("Exception in publish(): ", uriSynEx);
+				}
+				throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
+			}finally {
 				httpclient.getConnectionManager().shutdown();
 				if (deleteContentFileOnCompletion) {
 					contentFile.delete();
@@ -219,32 +228,40 @@ public class MarkLogicChannelType extends AbstractChannelType {
     	
         LOG.info("unpublish() invoked...");
 
-        HttpClient httpclient = new DefaultHttpClient();
+        final HttpClient httpclient = new DefaultHttpClient();
         try {
-        	
 			if (LOG.isDebugEnabled()) {
-				LOG.info("Unpublishing node: " + nodeToUnpublish);
+				LOG.debug("Unpublishing node: " + nodeToUnpublish);
 			}
 
-            URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
-
-            HttpDelete httpDelete = new HttpDelete(uriDelete);
-
-            HttpResponse response = httpclient.execute(httpDelete,
+            final URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
+            final HttpDelete httpDelete = new HttpDelete(uriDelete);
+            final HttpResponse response = httpclient.execute(httpDelete,
                     publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
-            LOG.info("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
-                    + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToUnpublish.toString());
-
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
+                        + response.getStatusLine().getReasonPhrase() + " - NodeRef: " + nodeToUnpublish.toString());
+			}
+            
 			if (response.getStatusLine().getStatusCode() != STATUS_DOCUMENT_DELETED) {
 				throw new AlfrescoRuntimeException(response.getStatusLine().getReasonPhrase());
 			}
-		} catch (IllegalStateException e) {
-			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-		} catch (IOException e) {
-			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
-		} catch (URISyntaxException e) {
-			throw new AlfrescoRuntimeException(e.getLocalizedMessage());
+		} catch (IllegalStateException illegalEx) {
+			if (LOG.isErrorEnabled()) {
+				LOG.error("Exception in Unpublish(): ", illegalEx);
+			}
+			throw new AlfrescoRuntimeException(illegalEx.getLocalizedMessage());
+		} catch (IOException ioex) {
+			if (LOG.isErrorEnabled()) {
+				LOG.error("Exception in Unpublish(): ", ioex);
+			}
+			throw new AlfrescoRuntimeException(ioex.getLocalizedMessage());
+		} catch (URISyntaxException uriSynEx) {
+			if (LOG.isErrorEnabled()) {
+				LOG.error("Exception in Unpublish(): ", uriSynEx);
+			}
+			throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
 		} finally {
 			httpclient.getConnectionManager().shutdown();
 		}

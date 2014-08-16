@@ -15,23 +15,16 @@
  ********************************************************************************/
 package org.zaizi.alfresco.publishing.marklogic;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.node.encryption.MetadataEncryptor;
 import org.alfresco.repo.publishing.PublishingModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.util.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.auth.AuthScope;
@@ -42,6 +35,8 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+
+import com.abhinav.alfresco.publishing.marklogic.MIMETypesProvider;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
@@ -59,10 +54,7 @@ public class MarkLogicPublishingHelper {
     
     /** The Constant log. */
     private final static Log LOG = LogFactory.getLog(MarkLogicPublishingHelper.class);
-    
-    /** The Constant supportedMimeTypes. */
-    private static final Set<String> supportedMimeTypes=new HashSet<String>();
-
+	
     /**
      * Sets the encryptor.
      *
@@ -153,38 +145,6 @@ public class MarkLogicPublishingHelper {
 	 * @return the mime types to be supported
 	 */
 	public static Set<String> getMimeTypesToBeSupported() {
-		Properties props=new Properties();
-		try (InputStream inStream = MarkLogicPublishingHelper.class
-				.getClassLoader().getResourceAsStream(MarkLogicPublishingModel.MIMETYPES_PROPERTIESFILE)) {
-			props.load(inStream);
-		} catch (IOException ioex) {
-			LOG.error("Exception getting the mimetypes from alfreco-global.properties:>>>> ",ioex);
-		} 
-		
-		//Get the supported mimetypes from alfreco-global.properties file 
-		if(props.getProperty(MarkLogicPublishingModel.SUPPORTD_MIME_KEY)!=null){
-			StringTokenizer tokens=new StringTokenizer(props.getProperty(MarkLogicPublishingModel.SUPPORTD_MIME_KEY),",");
-			while(tokens.hasMoreTokens()) {
-				supportedMimeTypes.add(tokens.nextToken().trim());
-			}
-			LOG.info("SupportedMimeTypes by MarkLogic publishing channel:>>>> "+supportedMimeTypes);
-
-			return CollectionUtils.unmodifiableSet(supportedMimeTypes);
-		}else {
-			//If mimetypes are not defined in properties file then return the default supported mimetypes
-  		   return CollectionUtils.unmodifiableSet(MimetypeMap.MIMETYPE_XML,
-				MimetypeMap.MIMETYPE_XHTML, MimetypeMap.MIMETYPE_JSON,
-				MimetypeMap.MIMETYPE_PDF, MimetypeMap.MIMETYPE_WORD,
-				MimetypeMap.MIMETYPE_EXCEL, MimetypeMap.MIMETYPE_TEXT_PLAIN,
-				MimetypeMap.MIMETYPE_PPT, MimetypeMap.MIMETYPE_HTML,
-				MimetypeMap.MIMETYPE_OPENXML_SPREADSHEET,
-				MimetypeMap.MIMETYPE_OPENXML_PRESENTATION,
-				MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING,
-				MimetypeMap.MIMETYPE_BINARY, MimetypeMap.MIMETYPE_IMAGE_GIF,
-				MimetypeMap.MIMETYPE_IMAGE_JPEG,
-				MimetypeMap.MIMETYPE_IMAGE_PNG,
-				MimetypeMap.MIMETYPE_OUTLOOK_MSG, MimetypeMap.MIMETYPE_ZIP,
-				MimetypeMap.MIMETYPE_RSS);
-		}
-	}
+		return MIMETypesProvider.getInstance().getMimeTypes();
+	} 
 }
