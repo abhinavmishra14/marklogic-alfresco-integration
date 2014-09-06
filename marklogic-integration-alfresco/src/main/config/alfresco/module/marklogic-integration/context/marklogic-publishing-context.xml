@@ -13,11 +13,27 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
+	
+	 Upgraded by Abhinav K Mishra 
+     Referene: http://wiki.alfresco.com/wiki/Data_Dictionary_Guide#Model_Bootstrapping
  -->
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 
 <beans>
-   <bean parent="publishingService_dictionaryBootstrap" depends-on="dictionaryBootstrap">
+   
+   <!-- [Bean definition to be used for Alfresco version 4.x] -->
+   <!-- 
+    <bean parent="publishingService_dictionaryBootstrap" depends-on="dictionaryBootstrap">
+      <property name="models">
+         <list>
+            <value>alfresco/module/marklogic-integration/model/marklogicModel.xml</value>
+         </list>
+      </property>
+   </bean>
+  -->
+   
+  <!-- [Bean definition to be used for Alfresco version 5.x and above] -->
+  <bean id="marklogic.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
       <property name="models">
          <list>
             <value>alfresco/module/marklogic-integration/model/marklogicModel.xml</value>
@@ -38,8 +54,6 @@
       <property name="contentService" ref="ContentService" />
    </bean>
 
-   <bean id="marklogicPublishingHelper" class="org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingHelper">
-      <property name="encryptor" ref="metadataEncryptor" />
-   </bean>
+   <bean id="marklogicPublishingHelper" class="org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingHelper"/>
 
 </beans>

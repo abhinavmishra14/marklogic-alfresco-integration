@@ -18,7 +18,6 @@ package org.zaizi.alfresco.publishing.marklogic;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
@@ -37,19 +36,25 @@ import org.alfresco.util.TempFileProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
  * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.<br/>
  * Also Added the supprot for XML,HTML,XHTML,GIF,DOC,PDF,DOCX,XLS,XLSX,DOCX,PPT,PPTX,TEXT,BINARY and JSON etc.<br/>
- * <b>Modified by-</b> Abhinav Kumar Mishra
- * 
+ * <b>Modified by-</b> Abhinav Kumar Mishra<br/>
+ * <i>Now, classes are compitable to JDK7 and HttpClient 4.3.x api.</i>
+ *  
  * @author aayala
  */
 public class MarkLogicChannelType extends AbstractChannelType {
@@ -155,23 +160,35 @@ public class MarkLogicChannelType extends AbstractChannelType {
 	public void publish(final NodeRef nodeToPublish,
 			final Map<QName, Serializable> channelProperties) {
         LOG.info("publish() invoked...");
+        
         final ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
         if (reader.exists()) {
             File contentFile;
             boolean deleteContentFileOnCompletion = false;
             if (FileContentReader.class.isAssignableFrom(reader.getClass())) {
-                // Grab the content straight from the content store if we can...
+                // Grab the content straight from the content store if we can
                 contentFile = ((FileContentReader) reader).getFile();
             }
             else {
-                // ...otherwise copy it to a temp file and use the copy...
+                // Otherwise copy it to a temp file and use the copy
                 final File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
                 contentFile = TempFileProvider.createTempFile("marklogic", "", tempDir);
                 reader.getContent(contentFile);
                 deleteContentFileOnCompletion = true;
             }
 
-            HttpClient httpclient = new DefaultHttpClient();
+            final CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			final AuthScope authscope = new AuthScope(
+					(String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
+					(int) channelProperties.get(MarkLogicPublishingModel.PROP_PORT));
+    		final UsernamePasswordCredentials credential = new UsernamePasswordCredentials(
+    				(String) channelProperties.get(MarkLogicPublishingModel.PROP_USER), 
+    				(String) channelProperties.get(MarkLogicPublishingModel.PROP_PASS));
+    		// Setting the credentials in AuthScope.
+    		credsProvider.setCredentials(authscope, credential);
+    		//Getting the httpClient object with authentication header
+    		final CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+    		
             try {
             	final String mimeType=reader.getMimetype();
                 if (LOG.isDebugEnabled()) {
@@ -179,14 +196,14 @@ public class MarkLogicChannelType extends AbstractChannelType {
                     LOG.debug("ContentFile_MIMETYPE: "+mimeType);
                 }
                                 
-                URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
+				final String putUri = publishingHelper.getPutURIFromNodeRefAndChannelProperties(
+								nodeToPublish, channelProperties);
 
-                final HttpPut httpput = new HttpPut(uriPut);                
-                final FileEntity filenEntity = new FileEntity(contentFile, mimeType);
+                final HttpPut httpput = new HttpPut(putUri);                
+                final FileEntity filenEntity = new FileEntity(contentFile, ContentType.create(mimeType));
                 httpput.setEntity(filenEntity);
 
-                final HttpResponse response = httpclient.execute(httpput,
-                        publishingHelper.getHttpContextFromChannelProperties(channelProperties));
+                final HttpResponse response = httpclient.execute(httpput);
 
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
@@ -211,7 +228,6 @@ public class MarkLogicChannelType extends AbstractChannelType {
 				}
 				throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
 			}finally {
-				httpclient.getConnectionManager().shutdown();
 				if (deleteContentFileOnCompletion) {
 					contentFile.delete();
 				}
@@ -228,16 +244,27 @@ public class MarkLogicChannelType extends AbstractChannelType {
     	
         LOG.info("unpublish() invoked...");
 
-        final HttpClient httpclient = new DefaultHttpClient();
+        final CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		final AuthScope authscope = new AuthScope(
+				(String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
+				(int) channelProperties.get(MarkLogicPublishingModel.PROP_PORT));
+		final UsernamePasswordCredentials credential = new UsernamePasswordCredentials(
+				(String) channelProperties.get(MarkLogicPublishingModel.PROP_USER), 
+				(String) channelProperties.get(MarkLogicPublishingModel.PROP_PASS));
+		// Setting the credentials in AuthScope.
+		credsProvider.setCredentials(authscope, credential);
+		//Getting the httpClient object with authentication header
+		final CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+		
         try {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Unpublishing node: " + nodeToUnpublish);
 			}
 
-            final URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
+			final String uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(
+							nodeToUnpublish, channelProperties);
             final HttpDelete httpDelete = new HttpDelete(uriDelete);
-            final HttpResponse response = httpclient.execute(httpDelete,
-                    publishingHelper.getHttpContextFromChannelProperties(channelProperties));
+            final HttpResponse response = httpclient.execute(httpDelete);
 
             if (LOG.isDebugEnabled()) {
             	LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
@@ -262,8 +289,6 @@ public class MarkLogicChannelType extends AbstractChannelType {
 				LOG.error("Exception in Unpublish(): ", uriSynEx);
 			}
 			throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
-		} finally {
-			httpclient.getConnectionManager().shutdown();
-		}
+		} 
     }
 }

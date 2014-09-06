@@ -21,45 +21,52 @@ import org.alfresco.service.namespace.QName;
  * MarkLogic Publishing Model.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
  * Added the custom constants<br/>
- * <b>Modified by-</b> Abhinav Kumar Mishra
+ * <b>Modified by-</b> Abhinav Kumar Mishra<br/>
+ * <i>Now, classes are compitable to JDK7 and HttpClient 4.3.x api.</i>
  *
  * @author aayala
  */
-public interface MarkLogicPublishingModel {
+public class MarkLogicPublishingModel {
 
-	 /** The protocol. */
- 	String PROTOCOL = "http";
-	 
-	 /** The uri. */
- 	String URI = "uri=";
-	 
-	 /** The mimetypes from propertiesfile. */
- 	String MIMETYPES_PROPERTIESFILE = "alfresco/module/marklogic-integration/alfresco-global.properties";
-	 
- 	/** The supportd mime key. */
-	 String SUPPORTD_MIME_KEY = "supportedMimeTypes";
+	/** The protocol. */
+	public static final String PROTOCOL = "http";
+
+	/** The uri. */
+	public static final String URI = "uri";
+
+	/** The mimetypes from propertiesfile. */
+	public static final String MIMETYPES_PROPERTIESFILE = "alfresco/module/marklogic-integration/alfresco-global.properties";
+
+	/** The supportd mime key. */
+	public static final String SUPPORTD_MIME_KEY = "supportedMimeTypes";
 
 	/** The Constant NAMESPACE. */
-	 String NAMESPACE = "http://www.alfresco.org/model/publishing/marklogic/1.0";
+	public static final String NAMESPACE = "http://www.alfresco.org/model/publishing/marklogic/1.0";
 
 	/** The Constant PREFIX. */
-	 String PREFIX = "marklogic";
+	public static final String PREFIX = "marklogic";
 
 	/** The Constant PROP_HOST. */
-	 QName PROP_HOST = QName.createQName(NAMESPACE, "host");
+	public static final QName PROP_HOST = QName.createQName(NAMESPACE, "host");
 
 	/** The Constant PROP_PORT. */
-	 QName PROP_PORT = QName.createQName(NAMESPACE, "port");
+	public static final QName PROP_PORT = QName.createQName(NAMESPACE, "port");
+
+	/** The prop user. */
+	public static final QName PROP_USER = QName.createQName(NAMESPACE, "mluser");
+
+	/** The prop pass. */
+	public static final QName PROP_PASS = QName.createQName(NAMESPACE, "mlpassword");
 
 	/** The Constant TYPE_DELIVERY_CHANNEL. */
-	 QName TYPE_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannel");
+	public static final QName TYPE_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannel");
 
 	/** The Constant ASPECT_DELIVERY_CHANNEL. */
-	 QName ASPECT_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannelAspect");
+	public static final QName ASPECT_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannelAspect");
 
 	/** The Constant PUBLISH_URI_KEY. */
-	 String PUBLISH_URI_KEY = "alfrescopub/publish";
+	public static final String PUBLISH_URI_KEY = "/alfrescopub/publish";
 
 	/** The Constant UNPUBLISH_URI_KEY. */
-	 String UNPUBLISH_URI_KEY = "alfrescopub/unpublish";
+	public static final String UNPUBLISH_URI_KEY = "/alfrescopub/unpublish";
 }
