@@ -18,15 +18,23 @@ package org.zaizi.alfresco.publishing.marklogic;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
-import com.abhinav.alfresco.publishing.marklogic.MIMETypesProvider;
+import com.abhinav.alfresco.publishing.marklogic.ConfigReader;
+import com.abhinav.alfresco.publishing.marklogic.MimeTypesProvider;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
@@ -41,8 +49,55 @@ import com.abhinav.alfresco.publishing.marklogic.MIMETypesProvider;
 public class MarkLogicPublishingHelper {
     
     /** The Constant log. */
-    private final static Log LOG = LogFactory.getLog(MarkLogicPublishingHelper.class);
-	
+    private final static Log LOG = LogFactory.getLog(MarkLogicPublishingHelper.class);   
+    
+	/**
+	 * Gets the closable http client.
+	 *
+	 * @param channelProperties the channel properties
+	 * @return the closable http client
+	 */
+	public CloseableHttpClient getClosableHttpClient(
+			final Map<QName, Serializable> channelProperties) {
+		
+		final Properties alfrescoGlobalProps = ConfigReader.getInstance().getKeys();
+		// Getting the httpClient object with authentication header
+		CloseableHttpClient httpclient = null;
+		if (Boolean.parseBoolean(alfrescoGlobalProps.getProperty(MarkLogicPublishingModel.ML_AUTH_ENABLED))) {
+			LOG.info("MarkLogic authentication enabled.");
+			httpclient = HttpClients.custom().setDefaultCredentialsProvider(
+					credentialProvider(channelProperties,alfrescoGlobalProps)).build();
+		} else {
+			LOG.info("MarkLogic authentication disabled.");
+			httpclient = HttpClients.custom().build();
+		}
+		return httpclient;
+	}
+    
+	/**
+	 * Credential provider.
+	 *
+	 * @param channelProperties the channel properties
+	 * @param alfrescoGlobalProps the properties
+	 * @return the credentials provider
+	 */
+	private CredentialsProvider credentialProvider(
+			final Map<QName, Serializable> channelProperties,
+			final Properties alfrescoGlobalProps) {
+    
+    	final String markLogicUsername = alfrescoGlobalProps.getProperty(MarkLogicPublishingModel.ML_USR);
+        final String markLogicPassword = alfrescoGlobalProps.getProperty(MarkLogicPublishingModel.ML_PASS);
+        final CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		final AuthScope authscope = new AuthScope(
+				(String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
+				(int) channelProperties.get(MarkLogicPublishingModel.PROP_PORT));
+		final UsernamePasswordCredentials credential = new UsernamePasswordCredentials(
+				markLogicUsername, markLogicPassword);
+		// Setting the credentials in AuthScope.
+		credsProvider.setCredentials(authscope, credential);
+		return credsProvider;
+	}
+    
     /**
      * Build URI for a nodeRef into MarkLogic Server using the channel properties.
      *
@@ -100,6 +155,6 @@ public class MarkLogicPublishingHelper {
 	 * @return the mime types to be supported
 	 */
 	public static Set<String> getMimeTypesToBeSupported() {
-		return MIMETypesProvider.getInstance().getMimeTypes();
+		return MimeTypesProvider.getInstance().getMimeTypes();
 	} 
 }

@@ -56,14 +56,6 @@
 					<title>MarkLogic Server port</title>
 					<type>d:int</type>
 				</property>
-				<property name="marklogic:mluser">
-					<title>MarkLogic Server user</title>
-					<type>d:text</type>
-				</property>
-				<property name="marklogic:mlpassword">
-					<title>MarkLogic Server password</title>
-					<type>d:text</type>
-				</property>
 			</properties>
 		</aspect>
 	</aspects>

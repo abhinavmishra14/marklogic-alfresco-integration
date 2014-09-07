@@ -55,5 +55,4 @@
    </bean>
 
    <bean id="marklogicPublishingHelper" class="org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingHelper"/>
-
 </beans>

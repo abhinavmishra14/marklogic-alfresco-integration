@@ -36,16 +36,11 @@ import org.alfresco.util.TempFileProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
@@ -177,17 +172,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
                 deleteContentFileOnCompletion = true;
             }
 
-            final CredentialsProvider credsProvider = new BasicCredentialsProvider();
-			final AuthScope authscope = new AuthScope(
-					(String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
-					(int) channelProperties.get(MarkLogicPublishingModel.PROP_PORT));
-    		final UsernamePasswordCredentials credential = new UsernamePasswordCredentials(
-    				(String) channelProperties.get(MarkLogicPublishingModel.PROP_USER), 
-    				(String) channelProperties.get(MarkLogicPublishingModel.PROP_PASS));
-    		// Setting the credentials in AuthScope.
-    		credsProvider.setCredentials(authscope, credential);
     		//Getting the httpClient object with authentication header
-    		final CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+    		final CloseableHttpClient httpclient = publishingHelper.getClosableHttpClient(channelProperties);
     		
             try {
             	final String mimeType=reader.getMimetype();
@@ -244,17 +230,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
     	
         LOG.info("unpublish() invoked...");
 
-        final CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		final AuthScope authscope = new AuthScope(
-				(String) channelProperties.get(MarkLogicPublishingModel.PROP_HOST),
-				(int) channelProperties.get(MarkLogicPublishingModel.PROP_PORT));
-		final UsernamePasswordCredentials credential = new UsernamePasswordCredentials(
-				(String) channelProperties.get(MarkLogicPublishingModel.PROP_USER), 
-				(String) channelProperties.get(MarkLogicPublishingModel.PROP_PASS));
-		// Setting the credentials in AuthScope.
-		credsProvider.setCredentials(authscope, credential);
 		//Getting the httpClient object with authentication header
-		final CloseableHttpClient httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+		final CloseableHttpClient httpclient = publishingHelper.getClosableHttpClient(channelProperties);
 		
         try {
 			if (LOG.isDebugEnabled()) {

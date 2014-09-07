@@ -24,21 +24,21 @@ import org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingModel;
  * 
  * @author Abhinav kumar mishra
  */
-public final class MIMETypesProvider {
+public final class MimeTypesProvider {
 	
 	/** The Constant LOG. */
-	private final static Log LOG = LogFactory.getLog(MIMETypesProvider.class);
+	private final static Log LOG = LogFactory.getLog(MimeTypesProvider.class);
 
 	/** The Constant supportedMimeTypes. */
 	private final Set<String> supportedMimeTypes = new HashSet<String>();
 
 	/** The Constant instance. */
-	private static final MIMETypesProvider INSTANCE = new MIMETypesProvider();
+	private static final MimeTypesProvider INSTANCE = new MimeTypesProvider();
 
 	/**
 	 * Instantiates a new MIME types provider.
 	 */
-	private MIMETypesProvider() {
+	private MimeTypesProvider() {
 		super();
 		init();
 	}
@@ -49,7 +49,7 @@ public final class MIMETypesProvider {
 	 *
 	 * @return single instance of MIMETypesProvider
 	 */
-	public static MIMETypesProvider getInstance() {	
+	public static MimeTypesProvider getInstance() {	
 		return INSTANCE;
 	}
 	
@@ -59,7 +59,7 @@ public final class MIMETypesProvider {
 	private void init() {
 		final Properties props = new Properties();
 		try (InputStream inStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(MarkLogicPublishingModel.MIMETYPES_PROPERTIESFILE)) {
+				.getResourceAsStream(MarkLogicPublishingModel.GLOBAL_PROPERTIESFILE)) {
 			props.load(inStream);
 		} catch (IOException ioex) {
 			if (LOG.isErrorEnabled()) {

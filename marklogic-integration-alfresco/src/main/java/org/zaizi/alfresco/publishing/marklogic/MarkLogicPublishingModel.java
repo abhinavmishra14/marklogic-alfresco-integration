@@ -26,16 +26,25 @@ import org.alfresco.service.namespace.QName;
  *
  * @author aayala
  */
-public class MarkLogicPublishingModel {
+public final class MarkLogicPublishingModel {
 
 	/** The protocol. */
 	public static final String PROTOCOL = "http";
 
 	/** The uri. */
 	public static final String URI = "uri";
+	
+	/** The Constant ML_USR. */
+	public static final String ML_USR = "ml.user";
 
-	/** The mimetypes from propertiesfile. */
-	public static final String MIMETYPES_PROPERTIESFILE = "alfresco/module/marklogic-integration/alfresco-global.properties";
+	/** The Constant ML_PASS. */
+	public static final String ML_PASS = "ml.password";
+	
+	/** The Constant ML_AUTH_ENABLED. */
+	public static final String ML_AUTH_ENABLED = "ml.auth.enabled";
+
+	/** The GLOBAL_PROPERTIESFILE. */
+	public static final String GLOBAL_PROPERTIESFILE = "alfresco/module/marklogic-integration/alfresco-global.properties";
 
 	/** The supportd mime key. */
 	public static final String SUPPORTD_MIME_KEY = "supportedMimeTypes";
@@ -51,12 +60,6 @@ public class MarkLogicPublishingModel {
 
 	/** The Constant PROP_PORT. */
 	public static final QName PROP_PORT = QName.createQName(NAMESPACE, "port");
-
-	/** The prop user. */
-	public static final QName PROP_USER = QName.createQName(NAMESPACE, "mluser");
-
-	/** The prop pass. */
-	public static final QName PROP_PASS = QName.createQName(NAMESPACE, "mlpassword");
 
 	/** The Constant TYPE_DELIVERY_CHANNEL. */
 	public static final QName TYPE_DELIVERY_CHANNEL = QName.createQName(NAMESPACE, "DeliveryChannel");
