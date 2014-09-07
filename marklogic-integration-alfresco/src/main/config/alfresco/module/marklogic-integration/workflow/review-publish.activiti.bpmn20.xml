@@ -15,7 +15,7 @@
 	limitations under the License.
  -->
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://alfresco.org">
-  <process id="activitiReviewPublish" name="Review and Channel Publishing">
+  <process id="activitiReviewPublish" name="Review and MarkLogic Publishing">
     <startEvent id="start" activiti:formKey="mlwf:submitReviewTask"></startEvent>
     <userTask id="reviewTask" name="Review Task" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="mlwf:activitiReviewTask">
       <extensionElements>
