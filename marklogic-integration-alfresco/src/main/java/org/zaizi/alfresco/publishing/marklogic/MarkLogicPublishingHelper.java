@@ -64,11 +64,11 @@ public class MarkLogicPublishingHelper {
 		// Getting the httpClient object with authentication header
 		CloseableHttpClient httpclient = null;
 		if (Boolean.parseBoolean(alfrescoGlobalProps.getProperty(MarkLogicPublishingModel.ML_AUTH_ENABLED))) {
-			LOG.info("MarkLogic authentication enabled.");
+			LOG.debug("MarkLogic authentication enabled.");
 			httpclient = HttpClients.custom().setDefaultCredentialsProvider(
 					credentialProvider(channelProperties,alfrescoGlobalProps)).build();
 		} else {
-			LOG.info("MarkLogic authentication disabled.");
+			LOG.debug("MarkLogic authentication disabled.");
 			httpclient = HttpClients.custom().build();
 		}
 		return httpclient;
