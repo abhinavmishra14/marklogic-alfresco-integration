@@ -18,6 +18,7 @@ package org.zaizi.alfresco.publishing.marklogic;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Map;
@@ -36,20 +37,19 @@ import org.alfresco.util.TempFileProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * Channel definition for publishing/unpublishing XML content to MarkLogic Server.<br/>
  * <b>Note:</b> This class file is forked form https://github.com/zaizi/marklogic-alfresco-integration.git
  * Modified the method call for to handle the publishing and unpublishing to support MarkLogic REST apis.<br/>
  * Also Added the supprot for XML,HTML,XHTML,GIF,DOC,PDF,DOCX,XLS,XLSX,DOCX,PPT,PPTX,TEXT,BINARY and JSON etc.<br/>
- * <b>Modified by-</b> Abhinav Kumar Mishra<br/>
- * <i>Now, classes are compitable to JDK7 and HttpClient 4.3.x api.</i>
- *  
+ * <b>Modified by-</b> Abhinav Kumar Mishra
+ * 
  * @author aayala
  */
 public class MarkLogicChannelType extends AbstractChannelType {
@@ -155,26 +155,23 @@ public class MarkLogicChannelType extends AbstractChannelType {
 	public void publish(final NodeRef nodeToPublish,
 			final Map<QName, Serializable> channelProperties) {
         LOG.info("publish() invoked...");
-        
         final ContentReader reader = contentService.getReader(nodeToPublish, ContentModel.PROP_CONTENT);
         if (reader.exists()) {
             File contentFile;
             boolean deleteContentFileOnCompletion = false;
             if (FileContentReader.class.isAssignableFrom(reader.getClass())) {
-                // Grab the content straight from the content store if we can
+                // Grab the content straight from the content store if we can...
                 contentFile = ((FileContentReader) reader).getFile();
             }
             else {
-                // Otherwise copy it to a temp file and use the copy
+                // ...otherwise copy it to a temp file and use the copy...
                 final File tempDir = TempFileProvider.getLongLifeTempDir("marklogic");
                 contentFile = TempFileProvider.createTempFile("marklogic", "", tempDir);
                 reader.getContent(contentFile);
                 deleteContentFileOnCompletion = true;
             }
 
-    		//Getting the httpClient object with authentication header
-    		final CloseableHttpClient httpclient = publishingHelper.getClosableHttpClient(channelProperties);
-    		
+            HttpClient httpclient = new DefaultHttpClient();
             try {
             	final String mimeType=reader.getMimetype();
                 if (LOG.isDebugEnabled()) {
@@ -182,14 +179,14 @@ public class MarkLogicChannelType extends AbstractChannelType {
                     LOG.debug("ContentFile_MIMETYPE: "+mimeType);
                 }
                                 
-				final String putUri = publishingHelper.getPutURIFromNodeRefAndChannelProperties(
-								nodeToPublish, channelProperties);
+                URI uriPut = publishingHelper.getPutURIFromNodeRefAndChannelProperties(nodeToPublish, channelProperties);
 
-                final HttpPut httpput = new HttpPut(putUri);                
-                final FileEntity filenEntity = new FileEntity(contentFile, ContentType.create(mimeType));
+                final HttpPut httpput = new HttpPut(uriPut);                
+                final FileEntity filenEntity = new FileEntity(contentFile, mimeType);
                 httpput.setEntity(filenEntity);
 
-                final HttpResponse response = httpclient.execute(httpput);
+                final HttpResponse response = httpclient.execute(httpput,
+                        publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
@@ -214,6 +211,7 @@ public class MarkLogicChannelType extends AbstractChannelType {
 				}
 				throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
 			}finally {
+				httpclient.getConnectionManager().shutdown();
 				if (deleteContentFileOnCompletion) {
 					contentFile.delete();
 				}
@@ -230,18 +228,16 @@ public class MarkLogicChannelType extends AbstractChannelType {
     	
         LOG.info("unpublish() invoked...");
 
-		//Getting the httpClient object with authentication header
-		final CloseableHttpClient httpclient = publishingHelper.getClosableHttpClient(channelProperties);
-		
+        final HttpClient httpclient = new DefaultHttpClient();
         try {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Unpublishing node: " + nodeToUnpublish);
 			}
 
-			final String uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(
-							nodeToUnpublish, channelProperties);
+            final URI uriDelete = publishingHelper.getDeleteURIFromNodeRefAndChannelProperties(nodeToUnpublish, channelProperties);
             final HttpDelete httpDelete = new HttpDelete(uriDelete);
-            final HttpResponse response = httpclient.execute(httpDelete);
+            final HttpResponse response = httpclient.execute(httpDelete,
+                    publishingHelper.getHttpContextFromChannelProperties(channelProperties));
 
             if (LOG.isDebugEnabled()) {
             	LOG.debug("Response Status: " + response.getStatusLine().getStatusCode() + " - Message: "
@@ -266,6 +262,8 @@ public class MarkLogicChannelType extends AbstractChannelType {
 				LOG.error("Exception in Unpublish(): ", uriSynEx);
 			}
 			throw new AlfrescoRuntimeException(uriSynEx.getLocalizedMessage());
-		} 
+		} finally {
+			httpclient.getConnectionManager().shutdown();
+		}
     }
 }

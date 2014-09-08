@@ -20,8 +20,7 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 
 <beans>
-   
-   <!-- [Bean definition to be used for Alfresco version 4.x] -->
+  <!-- [Bean definition to be used for Alfresco version 4.x] -->
    <!-- 
     <bean parent="publishingService_dictionaryBootstrap" depends-on="dictionaryBootstrap">
       <property name="models">
@@ -54,5 +53,8 @@
       <property name="contentService" ref="ContentService" />
    </bean>
 
-   <bean id="marklogicPublishingHelper" class="org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingHelper"/>
+   <bean id="marklogicPublishingHelper" class="org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingHelper">
+      <property name="encryptor" ref="metadataEncryptor" />
+   </bean>
+
 </beans>

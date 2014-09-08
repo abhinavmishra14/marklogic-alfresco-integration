@@ -1,6 +1,6 @@
 /*
  * Created By: Abhinav Kumar Mishra
- * Copyright &copy; 2013-2014. Abhinav Kumar Mishra. 
+ * Copyright &copy; 2014-2015. Abhinav Kumar Mishra. 
  * All rights reserved.
  */
 package com.abhinav.alfresco.publishing.marklogic;
@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.zaizi.alfresco.publishing.marklogic.MarkLogicPublishingModel;
 
 /**
- * The Class MIMETypesProvider.<br/>
+ * The Class MimeTypesProvider.<br/>
  * Singleton class will provide the supported mime types mapped in alfresco-global.properties file.<br/>
  * 
  * @author Abhinav kumar mishra
@@ -59,7 +59,7 @@ public final class MimeTypesProvider {
 	private void init() {
 		final Properties props = new Properties();
 		try (InputStream inStream = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(MarkLogicPublishingModel.GLOBAL_PROPERTIESFILE)) {
+				.getResourceAsStream(MarkLogicPublishingModel.MIMETYPES_PROPERTIESFILE)) {
 			props.load(inStream);
 		} catch (IOException ioex) {
 			if (LOG.isErrorEnabled()) {
